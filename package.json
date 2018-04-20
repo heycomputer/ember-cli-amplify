@@ -1,17 +1,20 @@
 {
   "name": "ember-aws-amplify",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "The default blueprint for ember-cli addons.",
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "aws",
+    "amplify",
+    "webpack"
   ],
   "license": "MIT",
-  "author": "",
+  "author": "grimbonious@hey.computer",
   "directories": {
     "doc": "doc",
     "test": "tests"
   },
-  "repository": "",
+  "repository": "https://github.com/grimbonious/ember-aws-amplify",
   "scripts": {
     "build": "ember build",
     "lint:js": "eslint ./*.js addon addon-test-support app config lib server test-support tests",
