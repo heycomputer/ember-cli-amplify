@@ -1,48 +1,90 @@
 /* eslint-env node */
 
-'use strict';
+'use strict'
 
-const path = require('path');
-const existsSync = require('exists-sync');
-const chalk = require('chalk');
-const EOL = require('os').EOL;
-const BuildConfigEditor = require('ember-cli-build-config-editor');
-
+const path = require('path')
+const existsSync = require('exists-sync')
+const fs = require('fs-extra')
+const chalk = require('chalk')
+const EOL = require('os').EOL
+const recast = require('recast')
+const camelCase = require('camelcase')
 const addonName = 'ember-aws-amplify'
 const amplifyModuleName = 'aws-amplify'
 const webpackImporterAddonName = 'ember-cli-webpack-imports'
 const webpackImporterConfigKey = webpackImporterAddonName
+const builders = recast.types.builders
+
+function getOptionsNode(ast) {
+  var optionsNode
+  recast.visit(ast, {
+    visitNewExpression: function(path) {
+      var node = path.node
+      if (['EmberApp', 'EmberAddon'].includes(node.callee.name)) {
+        optionsNode = node.arguments.find((argument) => argument.type === 'ObjectExpression')
+        return false
+      } else {
+        this.traverse(path)
+      }
+    }
+  })
+  return optionsNode
+}
+
+function hasKey(propertyNode, key) {
+  const propertyKey = propertyNode.key
+  const propertyType = propertyKey.type
+  return propertyType === 'Literal' && propertyKey.value == key ||
+    propertyType === 'Identifier' && propertyKey.name == key
+}
+
+function getOrCreateProperty(parentNode, propertyType, propertyName, propertyValueType) {
+  var siblings = parentNode.properties
+  var propertyNode = siblings.find((propertyNode) => hasKey(propertyNode, propertyName))
+  if (!propertyNode) {
+    propertyNode = builders.property(
+      'init',
+      builders[camelCase(propertyType)](propertyName),
+      builders[camelCase(propertyValueType)]([])
+    )
+    siblings.push(propertyNode)
+  }
+  return propertyNode
+}
 
 module.exports = {
   normalizeEntityName() {}, // no-op since we're just adding dependencies
 
   addWebpackImportToApp: function(webpackModuleName) {
-    const file = 'ember-cli-build.js';
+    const file = 'ember-cli-build.js'
     if (existsSync(file)) {
-      let source = fs.readFileSync(file, 'utf-8');
-      let build = new BuildConfigEditor(source);
-      let config = build.retrieve(webpackImporterConfigKey);
-      if(!config) {
-        config = { expose: [] }
-      } else if(!Array.isArray(config.expose)) {
-        config.expose = []
-      } else if(config.expose.includes(webpackModuleName)) {
-        this.ui.writeLine(chalk.yellow(`${webpackModuleName} already exists in ${configKey} configuration. skipping...`));
-        return
-      }
-      config.expose.push(webpackModuleName)
       try {
-        const code = build.edit(webpackImporterConfigKey, config).code()
-        fs.writeFileSync(file, code);
-        this.ui.writeLine(chalk.green(`Added ${webpackModuleName} webpack import configuration to ${file}`));
+        this.ui.writeLine(chalk.green(`Updating ${file}...`))
+        let source = fs.readFileSync(file, 'utf-8')
+        let ast = recast.parse(source)
+        let optionsNode = getOptionsNode(ast)
+        let addonNode = getOrCreateProperty(optionsNode, 'Literal', webpackImporterConfigKey, 'ObjectExpression')
+        let webpackModuleNodes = getOrCreateProperty(addonNode.value, 'Literal', 'exports', 'ArrayExpression')
+
+        if (webpackModuleNodes.value.elements.find((el) => el.value === webpackModuleName)) {
+          this.ui.writeLine(chalk.yellow(`${webpackModuleName} already included in ${webpackImporterConfigKey} configuration. skipping...`))
+          return
+        }
+
+        webpackModuleNodes.value.elements.push(builders.literal(webpackModuleName))
+
+        const code = recast.print(ast).code
+        fs.writeFileSync(file, code)
+        this.ui.writeLine(chalk.green(`Added ${webpackModuleName} webpack import configuration to ${file}`))
       } catch (e) {
         let manualConfig = {}
-        manualConfig[webpackImporterConfigKey] = { exports: [webpackModuleName] }
-        this.ui.writeLine(chalk.red(`${file} could not be edited.`));
-        this.ui.writeLine(chalk.yellow(`Please update the ${file} Ember app configuration to include:`));
-        this.ui.writeLine('let app = new EmberApp(defaults, {');
-        this.ui.writeLine(chalk.orange(JSON.stringify(manualConfig, null, '  ')));
-        this.ui.writeLine('  });');
+        this.ui.writeLine(e)
+        manualConfig[webpackImporterConfigKey] = {
+          exports: [webpackModuleName]
+        }
+        this.ui.writeLine(chalk.red(`${file} could not be edited.`))
+        this.ui.writeLine(chalk.yellow(`Please update the EmberApp config in ${file} to include:` + EOL))
+        this.ui.writeLine('let app = new EmberApp(defaults, ' + chalk.green(JSON.stringify(manualConfig, null, '  ')) + ')' + EOL)
       }
     } else {
       this.ui.writeLine(chalk.red(`Ember CLI file ${file} is not present.`))
@@ -66,10 +108,10 @@ module.exports = {
       return this.addPackagesToProject([{
         name: amplifyModuleName,
         target: 'latest'
-      }]);
+      }])
     }).then(() => {
       // Add webpack import to ember-cli-build.js
       return this.addWebpackImportToApp(amplifyModuleName)
     })
   }
-};
+}
