@@ -1,7 +1,7 @@
 {
   "name": "ember-aws-amplify",
   "version": "0.0.1",
-  "description": "The default blueprint for ember-cli addons.",
+  "description": "Adds aws-amplify to your ember-cli project.",
   "keywords": [
     "ember-addon",
     "aws",
