@@ -1,1 +1,1 @@
-export { default } from 'ember-aws-amplify/services/amplify';
+export { default } from 'ember-cli-amplify/services/amplify';

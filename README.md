@@ -1,4 +1,4 @@
-# ember-aws-amplify
+# ember-cli-amplify
 
 Adds AWS Amplify to your Ember CLI project.
 This Ember addon is neither created nor endorsed by Amazon!
@@ -29,7 +29,7 @@ See [here](https://github.com/aws/awsmobile-cli#awsmobile-configure) for more de
 ## Installation
 
 ```
-ember install ember-aws-amplify
+ember install ember-cli-amplify
 ```
 
 On installation the addon will automatically perform the following actions:
@@ -110,7 +110,7 @@ Want to know how to use the Amplify category objects? Check out these links:
 ### Installation
 
 - `git clone <repository-url>`
-- `cd ember-aws-amplify`
+- `cd ember-cli-amplify`
 - `npm install`
 
 ### Linting

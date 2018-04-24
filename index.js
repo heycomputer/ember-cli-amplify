@@ -1,5 +1,5 @@
 'use strict';
 
 module.exports = {
-  name: 'ember-aws-amplify'
+  name: 'ember-cli-amplify'
 };

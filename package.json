@@ -1,5 +1,5 @@
 {
-  "name": "ember-aws-amplify",
+  "name": "ember-cli-amplify",
   "version": "0.0.1",
   "description": "Adds AWS Amplify features to your ember-cli project.",
   "keywords": [
@@ -16,10 +16,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/grimbonious/ember-aws-amplify.git"
+    "url": "https://github.com/grimbonious/ember-cli-amplify.git"
   },
   "bugs": {
-    "url": "https://github.com/grimbonious/ember-aws-amplify/issues"
+    "url": "https://github.com/grimbonious/ember-cli-amplify/issues"
   },
   "scripts": {
     "build": "ember build",
