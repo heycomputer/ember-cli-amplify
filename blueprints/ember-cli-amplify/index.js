@@ -9,6 +9,7 @@ const chalk = require('chalk')
 const EOL = require('os').EOL
 const recast = require('recast')
 const camelCase = require('camelcase')
+const Blueprint = require('ember-cli/lib/models/blueprint');
 const addonName = 'ember-cli-amplify'
 const amplifyModuleName = 'aws-amplify'
 const webpackImporterAddonName = 'ember-cli-webpack-imports'
@@ -92,7 +93,7 @@ module.exports = {
     }
   },
 
-  afterInstall() {
+  afterInstall(options) {
     // Add addons to package.json and run defaultBlueprint
     return this.addAddonsToProject({
       // a packages array defines the addons to install
@@ -112,6 +113,14 @@ module.exports = {
     }).then(() => {
       // Add webpack import to ember-cli-build.js
       return this.addWebpackImportToApp(amplifyModuleName)
+    }).then(() => {
+      var blueprint = Blueprint.lookup('instance-initializer', {
+        paths: [path.resolve(__dirname, '..')]
+      })
+      options['entity'] = {
+        name: 'amplify-initializer'
+      }
+      return blueprint.install(options)
     })
   }
 }

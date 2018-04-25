@@ -9,9 +9,6 @@ import Amplify, {
   PubSub,
   Logger
 } from 'aws-amplify'
-import awsmobile from '../aws-exports'
-
-Amplify.configure(awsmobile)
 
 export default Service.extend({
   Amplify,
