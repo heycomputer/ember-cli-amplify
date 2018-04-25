@@ -37,6 +37,7 @@ On installation the addon will automatically perform the following actions:
 1. Add aws-amplify to devDependencies in package.json
 2. Add ember-cli-webpack-imports to devDependencies in package.json
 3. Add aws-amplify to an ember-cli-webpack-imports configuration in the EmberApp options found in ember-cli-build.js
+4. Generate instance initializer amplify-initializer.js to configure the Amplify service
 
 Because aws-amplify is a webpack module the ember-cli-webpack-exports addon is used to add aws-amplify to the build.
 
