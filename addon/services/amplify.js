@@ -22,5 +22,8 @@ export default Service.extend({
   Storage,
   Cache,
   PubSub,
-  Logger
+  Logger,
+  configure(config) {
+    this.Amplify.configure(config)
+  }
 })
