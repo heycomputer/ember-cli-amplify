@@ -65,7 +65,7 @@ module.exports = {
         let ast = recast.parse(source)
         let optionsNode = getOptionsNode(ast)
         let addonNode = getOrCreateProperty(optionsNode, 'Literal', webpackImporterConfigKey, 'ObjectExpression')
-        let webpackModuleNodes = getOrCreateProperty(addonNode.value, 'Literal', 'exports', 'ArrayExpression')
+        let webpackModuleNodes = getOrCreateProperty(addonNode.value, 'Literal', 'expose', 'ArrayExpression')
 
         if (webpackModuleNodes.value.elements.find((el) => el.value === webpackModuleName)) {
           this.ui.writeLine(chalk.yellow(`${webpackModuleName} already included in ${webpackImporterConfigKey} configuration. skipping...`))
