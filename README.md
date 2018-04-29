@@ -32,7 +32,7 @@ See [here](https://github.com/aws/awsmobile-cli#awsmobile-configure) for more de
 ember install ember-cli-amplify
 ```
 
-On installation the addon will automatically perform the following actions:
+On installation the addon will request confirmation to perform the following actions:
 
 1. Add aws-amplify to devDependencies in package.json
 2. Add ember-cli-webpack-imports to devDependencies in package.json

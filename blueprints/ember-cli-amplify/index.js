@@ -93,34 +93,69 @@ module.exports = {
     }
   },
 
-  afterInstall(options) {
-    // Add addons to package.json and run defaultBlueprint
-    return this.addAddonsToProject({
-      // a packages array defines the addons to install
-      packages: [
-        // name is the addon name, and target (optional) is the version
-        {
-          name: webpackImporterAddonName,
-          target: 'latest'
-        },
-      ]
-    }).then(() => {
-      // Add npm packages to package.json
-      return this.addPackagesToProject([{
-        name: amplifyModuleName,
-        target: 'latest'
-      }])
-    }).then(() => {
-      // Add webpack import to ember-cli-build.js
-      return this.addWebpackImportToApp(amplifyModuleName)
-    }).then(() => {
-      var blueprint = Blueprint.lookup('instance-initializer', {
-        paths: [path.resolve(__dirname, '..')]
-      })
-      options['entity'] = {
-        name: 'amplify-initializer'
+  confirm(executor, promptMessage) {
+    return this.ui.prompt({
+      type: 'confirm',
+      name: 'action',
+      message: promptMessage
+    }).then((response) => {
+      if (response.action === true) {
+        return executor();
+      } else {
+        return false;
       }
-      return blueprint.install(options)
     })
+  },
+
+  addDependencyAwsAmplify() {
+    return this.addPackagesToProject([{
+      name: amplifyModuleName,
+      target: 'latest'
+    }])
+  },
+
+  addAddonWebpackImporter() {
+    return this.addAddonsToProject({
+      packages: [{
+        name: webpackImporterAddonName,
+        target: 'latest'
+      }, ]
+    }).then(() => true)
+  },
+
+  addInstanceInitializer(options) {
+    var blueprint = Blueprint.lookup('instance-initializer', {
+      paths: [path.resolve(__dirname, '..')]
+    })
+    options['entity'] = {
+      name: 'amplify-initializer'
+    }
+    return blueprint.install(options)
+  },
+
+  async afterInstall(options) {
+
+    const confirm = this.confirm.bind(this)
+    const addDependencyAwsAmplify = this.addDependencyAwsAmplify.bind(this)
+    const addAddonWebpackImporter = this.addAddonWebpackImporter.bind(this)
+    const addWebpackImportToApp = this.addWebpackImportToApp.bind(this, amplifyModuleName)
+    const addInstanceInitializer = this.addInstanceInitializer.bind(this, options)
+
+    await confirm(addDependencyAwsAmplify,
+      `Add ${amplifyModuleName} to package.json? (recommended)`)
+
+    this.ui.writeLine(chalk.green(`${addonName} uses node module ${webpackImporterAddonName} to import ${amplifyModuleName}`))
+    let usingImporter = await confirm(addAddonWebpackImporter,
+      `Add ${webpackImporterAddonName} to package.json? (recommended)`)
+
+    if (usingImporter) {
+      await confirm(addWebpackImportToApp,
+        `Add ${webpackImporterAddonName} configuration for ${amplifyModuleName} to ember-cli-build.js? (recommended)`)
+    }
+
+    await this.confirm(addInstanceInitializer,
+      `Generate an Ember instance initializer to configure the amplify service? (recommended)`)
+
+    this.ui.writeLine(chalk.green(`${addonName} default blueprint complete`))
   }
 }
