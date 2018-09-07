@@ -7,7 +7,8 @@ import Amplify, {
   Storage,
   Cache,
   PubSub,
-  Logger
+  Logger,
+  Interactions
 } from 'aws-amplify'
 
 export default Service.extend({
@@ -19,6 +20,7 @@ export default Service.extend({
   Storage,
   Cache,
   PubSub,
+  Interactions,
   Logger,
   configure(config) {
     this.Amplify.configure(config)
