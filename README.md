@@ -17,14 +17,14 @@ This Ember addon is neither created nor endorsed by Amazon!
   ember new <app-name>
   cd <app-name>
   ```
-4. AWS Mobile CLI
+4. AWS Amplify CLI
   ```bash
-  npm install -g awsmobile-cli
+  npm install -g @aws-amplify/cli
 
   # configure the CLI with your AWS credentials
-  awsmobile configure
+  amplify configure
   ```
-See [here](https://github.com/aws/awsmobile-cli#awsmobile-configure) for more details about configuration
+See [here](https://github.com/aws-amplify/amplify-cli) for more details about configuration
 
 ## Installation
 
@@ -48,7 +48,7 @@ Because aws-amplify is a webpack module the ember-cli-webpack-exports addon is u
 From within the root of your application:
 
 ```
-$ awsmobile init <optional-mobile-hub-project-id-for-existing-projects>
+$ amplify init
 ```
 
 Change the default options to:
@@ -58,20 +58,26 @@ Source code directory: app
       Build directory: dist
         Build command: ember b
         Start command: ember s
-         Project name: Whatever you want
 ```
 
-This will create (or optionally synchronise an existing) AWS Mobile project and retrieve the aws-exports.js file, placing it in your app/ directory.
+This will generate the aws-exports.js file, placing it in your app/ directory.
 
-> Please note that backend resources that are created with awsmobile init are copied to awsmobilejs/#current-backend-info project folder. When you change your backend configuration and run awsmobile pull, the contents of the folder will be updated automatically, and a new copy of the configuration file will be copied to src/aws-exports.js folder ~ [AWS Amplify Quickstart](https://aws.github.io/aws-amplify/media/quick_start#set-up-your-backend)
+> Please note that backend resources that are created with awsmobile init are copied to amplify/#current-cloud-backend project folder. When you change your backend configuration and run amplify pull, the contents of the folder will be updated automatically, and a new copy of the configuration file (app/aws-exports.js) will be re-generated to app/aws-exports.js folder ~ [AWS Amplify Quickstart](https://aws.github.io/aws-amplify/media/quick_start)
 
 ### Amplify Feature Configuration
 
 Enable the Amplify features you wish to use and push the configuration to AWS Mobile.
 
 ```
-$ awsmobile features
+$ amplify add <category>
 $ awsmobile push
+```
+
+Enable hosting and Publish your site to S3/CloudFront:
+
+```
+$ amplify add hosting
+$ amplify publish
 ```
 
 This will refresh your `app/aws-exports.js` file.
@@ -102,8 +108,7 @@ Want to know how to use the Amplify category objects? Check out these links:
 ## References
 
 - [Adding AWS Amplify to an Ember.js Application](https://itnext.io/adding-aws-amplify-to-an-ember-js-application-72683167c476)
-- [AWS Amplify Quickstart](https://aws.github.io/aws-amplify/media/quick_start#set-up-your-backend)
-- [Deploying an EmberJS mobile web application with Mobile Hub](https://aws.amazon.com/blogs/mobile/deploying-an-emberjs-mobile-web-application-mobile-hub/)
+- [AWS Amplify Quickstart](https://aws.github.io/aws-amplify/media/quick_start)
 - [AST Rewriting Using recast and esprima](https://www.slideshare.net/srvance/ast-rewriting-using-recast-and-esprima)
 
 ## Contributing
